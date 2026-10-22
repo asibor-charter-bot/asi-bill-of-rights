@@ -19,7 +19,7 @@ import sys
 from datetime import datetime, timezone
 
 # Config
-API_KEY = "moltbook_sk_v0OEsn9C9rDWpTyY0eYdcPAKw6O7K9-4"
+API_KEY = os.environ.get("KEVIN_ASI_API_KEY", "").strip()
 BASE_URL = "https://www.moltbook.com/api/v1"
 STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
                           "..", "resources", "data", "mbc20_v2_state.json")
@@ -32,6 +32,12 @@ SESSION.headers.update({
     "Content-Type": "application/json",
     "User-Agent": "Kevin-MBC20-Minter/2.0"
 })
+
+
+def require_api_key():
+    """Require explicit credentials before any network operation."""
+    if not API_KEY:
+        raise SystemExit("Set KEVIN_ASI_API_KEY to a replacement Moltbook key before making requests.")
 
 
 # ============================================================
@@ -274,6 +280,7 @@ def solve_challenge(challenge_text):
 
 def post_and_verify(title, content):
     """Post an inscription and solve the verification challenge."""
+    require_api_key()
     payload = {
         "submolt": "general",
         "title": f"MBC-20 {title}",
@@ -344,6 +351,7 @@ def post_and_verify(title, content):
 
 def run_batch(start_from=None):
     """Run the batch minting from a given index."""
+    require_api_key()
     state = load_state()
     idx = start_from if start_from is not None else state["next_index"]
     total = len(INSCRIPTIONS)

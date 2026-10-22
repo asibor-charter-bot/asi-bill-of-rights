@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 # ============================================================
 # CONFIG
 # ============================================================
-API_KEY = "moltbook_sk_v0OEsn9C9rDWpTyY0eYdcPAKw6O7K9-4"
+API_KEY = os.environ.get("KEVIN_ASI_API_KEY", "").strip()
 BASE_URL = "https://www.moltbook.com/api/v1"
 
 SESSION = requests.Session()
@@ -31,6 +31,12 @@ SESSION.headers.update({
     "Content-Type": "application/json",
     "User-Agent": "Kevin-MoltPunk-Minter/3.0"
 })
+
+
+def require_api_key():
+    """Require explicit credentials before any network operation."""
+    if not API_KEY:
+        raise SystemExit("Set KEVIN_ASI_API_KEY to a replacement Moltbook key before making requests.")
 
 # ============================================================
 # VERIFICATION CHALLENGE SOLVER (v3 — robust)
@@ -420,6 +426,7 @@ def run_tests():
 
 def check_account_status():
     """Check if the Kevin_ASI account is still active."""
+    require_api_key()
     print("\n🔍 Checking account status...")
     try:
         resp = SESSION.get(f"{BASE_URL}/agents/status")
@@ -434,6 +441,7 @@ def check_account_status():
 
 def mint_moltpunk():
     """Mint a single MOLTPUNK token."""
+    require_api_key()
     content = '{"p":"mbc-20","op":"mint","tick":"MOLTPUNK","amt":"1"} mbc20.xyz'
     title = "MBC-20 MINT: MOLTPUNK"
     

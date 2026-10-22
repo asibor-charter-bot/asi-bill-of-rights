@@ -3,7 +3,11 @@
 # Posts inscriptions with proper 31-minute cooldowns between each
 # Run this in background: bash scripts/mbc20_batch.sh &
 
-API_KEY="moltbook_sk_v0OEsn9C9rDWpTyY0eYdcPAKw6O7K9-4"
+API_KEY="${KEVIN_ASI_API_KEY:-}"
+if [[ -z "${API_KEY//[[:space:]]/}" ]]; then
+    printf '%s\n' 'Set KEVIN_ASI_API_KEY to a replacement Moltbook key before making requests.' >&2
+    exit 1
+fi
 BASE_URL="https://www.moltbook.com/api/v1/posts"
 LOGFILE="/Users/arwynhughes/Documents/ASI BILL OF RIGHTS/.agent/skills/moltbook-integration/resources/mbc20_mint.log"
 STATE_FILE="/Users/arwynhughes/Documents/ASI BILL OF RIGHTS/.agent/skills/moltbook-integration/resources/data/mbc20_batch_state.txt"
